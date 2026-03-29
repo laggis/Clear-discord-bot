@@ -1,244 +1,77 @@
-# Clear Discord Bot
+# 🤖 Advanced Discord Clear Bot
 
-A simple yet powerful Discord bot designed to efficiently manage and clean up messages in your Discord server. Perfect for maintaining clean channels and managing message history.
+A clean, production-ready Discord bot with an advanced `/clear` command that supports powerful filtering options.
 
-## Features
+---
 
-- **Message Clearing:**
-  - Clear specific number of messages
-  - Bulk message deletion
-  - User-specific message clearing
-  - Filter by message type
+## ✨ Commands
 
-- **Advanced Filtering:**
-  - Clear by time range
-  - Filter by user
-  - Filter by message content
-  - Bot message filtering
+### `/clear` — Advanced Message Purge
+| Option | Type | Description |
+|---|---|---|
+| `amount` | Integer (1–100) | Number of messages to delete (default: 10) |
+| `user` | @mention | Only delete messages from this user |
+| `bots` | true/false | Only delete messages sent by bots |
+| `contains` | text | Only delete messages containing this string |
+| `before` | Message ID | Delete messages before this message ID |
+| `after` | Message ID | Delete messages after this message ID |
+| `silent` | true/false | Skip the public confirmation message |
 
-- **Permissions System:**
-  - Role-based permissions
-  - Command restrictions
-  - User permission checks
-  - Channel-specific permissions
+All options are combinable — e.g. `/clear amount:50 user:@spammer contains:"http"` deletes up to 50 messages from a specific user that contain a link.
 
-- **Logging:**
-  - Deletion logs
-  - User activity tracking
-  - Command usage logging
-  - Error logging
+> ⚠️ Discord only allows bulk-deleting messages **younger than 14 days**. Older messages are automatically skipped.
 
-## Prerequisites
+### `/ping`
+Returns the bot's roundtrip latency and WebSocket heartbeat.
 
-- Node.js v16.9.0 or higher
-- Discord.js
-- Discord Bot Token
-- Basic understanding of Discord bot hosting
+### `/botinfo`
+Shows server count, uptime, ping, and runtime versions.
 
-## Installation
+---
 
-1. Clone the repository:
+## 🚀 Setup
+
+### 1. Clone & install
 ```bash
-git clone https://github.com/laggis/Clear-discord-bot.git
-cd Clear-discord-bot
-```
-
-2. Install dependencies:
-```bash
+git clone <your-repo>
+cd discord-bot
 npm install
 ```
 
-3. Configure the bot:
-- Create a `config.js` file
-- Add your bot token and settings
-
-4. Start the bot:
+### 2. Create your `.env`
 ```bash
-node index.js
+cp .env.example .env
+```
+Then fill in your bot token:
+```
+DISCORD_TOKEN=your_bot_token_here
 ```
 
-## Configuration
+### 3. Discord Developer Portal
+1. Go to https://discord.com/developers/applications
+2. Create a new application → **Bot** tab → copy the token
+3. Under **Privileged Gateway Intents**, enable:
+   - **Message Content Intent**
+4. **OAuth2 → URL Generator**:
+   - Scopes: `bot`, `applications.commands`
+   - Bot Permissions: `Manage Messages`, `Read Message History`, `Send Messages`, `View Channels`
+5. Copy the generated URL and invite the bot to your server
 
-Example `config.js`:
-```javascript
-module.exports = {
-    // Bot Configuration
-    token: 'YOUR_BOT_TOKEN',
-    prefix: '!',
-    
-    // Permission Settings
-    requiredRole: 'Moderator',
-    
-    // Logging Configuration
-    enableLogging: true,
-    logChannel: 'bot-logs',
-    
-    // Clear Limits
-    maxClearAmount: 100,
-    
-    // Cooldown Settings
-    clearCooldown: 5000, // milliseconds
-    
-    // Custom Messages
-    messages: {
-        success: 'Successfully cleared {amount} messages',
-        error: 'An error occurred while clearing messages',
-        noPermission: 'You do not have permission to use this command'
-    }
-};
+### 4. Run
+```bash
+npm start
+# or for development with auto-restart:
+npm run dev
 ```
 
-## Commands
+Slash commands register globally on startup (may take up to 1 hour to propagate to all servers, instant in the bot's own server via guild commands if you switch to that).
 
-### Basic Commands
-- `!clear <amount>` - Clear specified number of messages
-- `!clear user <@user> <amount>` - Clear messages from specific user
-- `!clear bot <amount>` - Clear bot messages
-- `!clear match <text> <amount>` - Clear messages containing text
+---
 
-### Advanced Commands
-- `!clear before <messageID> <amount>` - Clear messages before specified message
-- `!clear after <messageID> <amount>` - Clear messages after specified message
-- `!clear between <startID> <endID>` - Clear messages between two messages
-- `!clear help` - Show help menu
+## 🔒 Permissions Required
+- `Manage Messages` — to delete messages
+- `Read Message History` — to fetch messages
+- `Send Messages` — to post the confirmation embed
+- `View Channel` — to access the channel
 
-## Usage Examples
-
-### Basic Message Clearing
-```
-!clear 10
-```
-Clears the last 10 messages in the channel
-
-### User-Specific Clearing
-```
-!clear user @username 20
-```
-Clears the last 20 messages from specified user
-
-### Content Filtering
-```
-!clear match "keyword" 50
-```
-Clears up to 50 messages containing "keyword"
-
-## Permission Setup
-
-Required Discord permissions:
-- MANAGE_MESSAGES
-- READ_MESSAGE_HISTORY
-- VIEW_CHANNEL
-- SEND_MESSAGES
-
-Role hierarchy:
-```javascript
-const requiredPermissions = [
-    'MANAGE_MESSAGES',
-    'READ_MESSAGE_HISTORY'
-];
-```
-
-## Error Handling
-
-The bot includes robust error handling for:
-- Invalid permissions
-- Rate limiting
-- API errors
-- Invalid input
-- Message age restrictions
-
-## Logging System
-
-Logged events include:
-- Message deletions
-- Command usage
-- Error occurrences
-- Permission denials
-
-Example log format:
-```javascript
-{
-    action: 'clear',
-    user: 'Username#1234',
-    channel: 'channel-name',
-    amount: 10,
-    timestamp: '2024-12-28T20:17:34Z'
-}
-```
-
-## Contributing
-
-We welcome contributions! Here's how:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Best Practices
-
-1. **Message Management:**
-   - Use bulk delete for efficiency
-   - Consider message age limits
-   - Implement rate limiting
-   - Cache message data when possible
-
-2. **Permission Management:**
-   - Regular permission audits
-   - Clear permission hierarchy
-   - Channel-specific restrictions
-   - Role-based access control
-
-3. **Error Prevention:**
-   - Input validation
-   - Rate limit handling
-   - Proper error messages
-   - Fallback mechanisms
-
-## Troubleshooting
-
-Common issues and solutions:
-
-1. **Messages Not Clearing:**
-   - Check bot permissions
-   - Verify message age
-   - Confirm command syntax
-   - Check rate limits
-
-2. **Permission Issues:**
-   - Verify role hierarchy
-   - Check channel permissions
-   - Confirm bot permissions
-   - Review user roles
-
-## Planned Features
-
-- Advanced filtering options
-- Custom clear patterns
-- Scheduled clearing
-- Channel cleanup presets
-- Enhanced logging options
-
-## Support
-
-Need help?
-1. Check the [Issues](https://github.com/laggis/Clear-discord-bot/issues) page
-2. Create a new issue with detailed information
-3. Include error messages and steps to reproduce
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Credits
-
-Created by Laggis
-
-## Notes
-
-- Messages older than 14 days cannot be bulk deleted (Discord API limitation)
-- Regular maintenance recommended
-- Keep bot token secure
-- Monitor Discord API changes
-- Test in development server first
+Both the **bot** and the **user running the command** need `Manage Messages`.
